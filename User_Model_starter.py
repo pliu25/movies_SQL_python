@@ -28,7 +28,11 @@ class User:
             cursor = db_connection.cursor()
             '''
                 Insert your code here
+
+                
+                
             '''
+            print(self.db_name)
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -41,7 +45,7 @@ class User:
             cursor = db_connection.cursor()
             user_id = random.randint(0, self.max_safe_id)
 
-            # TODO: check to see if id already exists!!
+            # TODO: check to see if id already exists!! return error 
             
             user_data = (user_id, user_info["email"], user_info["username"], user_info["password"])
             #are you sure you have all data in the correct format?
