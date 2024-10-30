@@ -1,6 +1,5 @@
 import sqlite3
 
-#using python vs.s. termk
 try:
     movieDB = sqlite3.connect("movieDB_test.db")
     cursor = movieDB.cursor()
@@ -25,12 +24,6 @@ try:
         (7, "Steven Spielberg"),
         (8, "Tom Cruise")
     ]
-
-    
-;''    #sql: query language, python: programming language
-    # fetch all doen'st ftech it 
-
-
     cursor.executemany("INSERT INTO directors VALUES(?, ?);", directors_data)
     movieDB.commit()
     results = cursor.execute("SELECT * FROM directors")

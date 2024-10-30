@@ -28,11 +28,20 @@ class User:
             cursor = db_connection.cursor()
             '''
                 Insert your code here
-
-                
-                
             '''
+            
+            if id < self.max_safe_id:
+                return {"status":"success",
+                    "data":True}
+            elif type(username) == str:
+                return {"status":"success",
+                    "data":True}
+            elif (username == "") or (id == ""):
+                return {"status":"success",
+                    "data":False}
+
             print(self.db_name)
+            
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -46,6 +55,8 @@ class User:
             user_id = random.randint(0, self.max_safe_id)
 
             # TODO: check to see if id already exists!! return error 
+
+
             
             user_data = (user_id, user_info["email"], user_info["username"], user_info["password"])
             #are you sure you have all data in the correct format?
@@ -130,7 +141,7 @@ class User:
 if __name__ == '__main__':
     import os
     print("Current working directory:", os.getcwd())
-    DB_location=f"{os.getcwd()}/Models/yahtzeeDB.db"
+    DB_location=f"{os.getcwd()}/yahtzeeDB.db" #f"{os.getcwd()}/Models/yahtzeeDB.db"
     table_name = "users"
     
     Users = User(DB_location, table_name) 
@@ -141,5 +152,7 @@ if __name__ == '__main__':
         "username":"justingohde",
         "password":"123TriniT"
     }
+    exists = Users.exists(user_details)
+    print("exists", exists)
     results = Users.create(user_details)
     print(results)
