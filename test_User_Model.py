@@ -3,7 +3,7 @@ import sqlite3
 import os
 
 #test should inhabit the same folder as User_Model.py
-from User_Model import User
+from User_Model_starter import User
 
 def ensure_data_packet_formatting(self, packet, method, status):
     if status == "success":
@@ -29,7 +29,7 @@ class User_Model_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         #Runs once, before any tests are run
-        self.yahtzee_db_name=f"{os.getcwd()}/Models/yahtzeeDB.db"
+        self.yahtzee_db_name=f"{os.getcwd()}/yahtzeeDB.db"
         self.table_name = "users"
         self.UserModel = User(self.yahtzee_db_name, self.table_name)
         self.users=[{"email":"cookie.monster@trinityschoolnyc.org",

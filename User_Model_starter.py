@@ -29,7 +29,21 @@ class User:
             '''
                 Insert your code here
             '''
-            
+            sql_cmd = f'SELECT id, username FROM {self.table_name} WHERE EXISTS'
+            #sql_cmd_test = 'SELECT db_name'.format(self)
+            print(self.table_name)
+            print("sql_cmd", sql_cmd)
+            with db_connection:
+                results = cursor.execute(sql_cmd)
+                data = results.fetchone()
+                print("data", data)
+            if data == 0:
+                return {"status":"success",
+                    "data":False}
+            else:
+                return {"status":"success",
+                    "data":True}
+            '''
             if id < self.max_safe_id:
                 return {"status":"success",
                     "data":True}
@@ -41,7 +55,7 @@ class User:
                     "data":False}
 
             print(self.db_name)
-            
+            '''
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -63,6 +77,9 @@ class User:
             cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?);", user_data)
             db_connection.commit()
             
+            new_query = f"SELECT * FROM {self.table_name}"
+            DB_output = cursor.execute(new_query)
+            print(DB_output.fetchall())
             return {"status": "success",
                     "data": self.to_dict(user_data)
                     }
@@ -94,6 +111,11 @@ class User:
             '''
                 Insert your code here
             '''
+            new_query = f"SELECT * FROM {self.table_name}"
+            DB_output = cursor.execute(new_query)
+            return {"status":"success",
+                    "data":DB_output.fetchall()}
+        
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -143,7 +165,7 @@ if __name__ == '__main__':
     print("Current working directory:", os.getcwd())
     DB_location=f"{os.getcwd()}/yahtzeeDB.db" #f"{os.getcwd()}/Models/yahtzeeDB.db"
     table_name = "users"
-    
+    print("DB_location", DB_location)
     Users = User(DB_location, table_name) 
     Users.initialize_table()
 
@@ -155,4 +177,6 @@ if __name__ == '__main__':
     exists = Users.exists(user_details)
     print("exists", exists)
     results = Users.create(user_details)
-    print(results)
+    print("returned user",results)
+    get_all = Users.get_all()
+    print("get_all", get_all)
