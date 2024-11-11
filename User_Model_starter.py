@@ -78,9 +78,11 @@ class User:
             db_connection.commit()
             #return list of dictionaries 
             new_query = f"SELECT * FROM {self.table_name}"
-            print("new_query", new_query)
+            #print("new_query", new_query)
             DB_output = cursor.execute(new_query)
-            #username_output = cursor.execute(usernames)
+            #username = f"SELECT username * FROM {self.table_name}"
+            #username_output = cursor.execute(username)
+            #print("username", username_output)
             #print("fetchall2", username_output.fetchall())
             print("fetchall",DB_output.fetchall())
             if user_data[0] < self.max_safe_id:
