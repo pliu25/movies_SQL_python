@@ -1,3 +1,4 @@
+#after tonight, redownload test_User_Model.py to pass added test
 import unittest
 import sqlite3
 import os
@@ -135,6 +136,7 @@ class User_Model_Tests(unittest.TestCase):
                     "username":"somethingdifferent",
                     "password":"12345678920"}
        returned_user = self.UserModel.create(new_user)
+       #print("returned_user", returned_user)
        ensure_data_packet_formatting(self, returned_user, method, "error")
        try:  #check DB state
             db_connection = sqlite3.connect(self.yahtzee_db_name)

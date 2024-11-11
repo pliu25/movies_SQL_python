@@ -76,11 +76,21 @@ class User:
             #are you sure you have all data in the correct format?
             cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?);", user_data)
             db_connection.commit()
-            
+            #return list of dictionaries 
             new_query = f"SELECT * FROM {self.table_name}"
+            print("new_query", new_query)
             DB_output = cursor.execute(new_query)
-            print(DB_output.fetchall())
-            return {"status": "success",
+            #username_output = cursor.execute(usernames)
+            #print("fetchall2", username_output.fetchall())
+            print("fetchall",DB_output.fetchall())
+            if user_data[0] < self.max_safe_id:
+                #if user_data[2].isalnum() or user_data[2].includes("_") or user_data[2].includes("-"):
+                    #if user_data[2] != self.users[2]["email"]
+                    return {"status": "success",
+                    "data": self.to_dict(user_data)
+                    }
+            else: 
+                return {"status": "error",
                     "data": self.to_dict(user_data)
                     }
         
@@ -113,8 +123,9 @@ class User:
             '''
             new_query = f"SELECT * FROM {self.table_name}"
             DB_output = cursor.execute(new_query)
+            print(self.db_name)
             return {"status":"success",
-                    "data":DB_output.fetchall()}
+                    "data":len(self.db_name)}
         
         except sqlite3.Error as error:
             return {"status":"error",
