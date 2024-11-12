@@ -29,33 +29,30 @@ class User:
             '''
                 Insert your code here
             '''
-            sql_cmd = f'SELECT id, username FROM {self.table_name} WHERE EXISTS'
-            #sql_cmd_test = 'SELECT db_name'.format(self)
-            print(self.table_name)
-            print("sql_cmd", sql_cmd)
-            with db_connection:
-                results = cursor.execute(sql_cmd)
-                data = results.fetchone()
-                print("data", data)
-            if data == 0:
-                return {"status":"success",
-                    "data":False}
+            '''
+            if not username and not id:
+                return {"status":"error",
+                    "data": "failed to provide username or id"}
+            '''
+            
+            if username:
+                exists_check = cursor.execute(f"SELECT * FROM {self.table_name} WHERE username = ?;", (username, )).fetchall()
+                print("exists_check_username", exists_check)
+             
+            if id:
+                exists_check = cursor.execute(f"SELECT * FROM {self.table_name} WHERE id = ?;", (id, )).fetchall()
+
+            #print("exists_check", exists_check)
+            if exists_check:
+               return {"status":"success",
+                    "data": True}
             else:
                 return {"status":"success",
-                    "data":True}
-            '''
-            if id < self.max_safe_id:
-                return {"status":"success",
-                    "data":True}
-            elif type(username) == str:
-                return {"status":"success",
-                    "data":True}
-            elif (username == "") or (id == ""):
-                return {"status":"success",
-                    "data":False}
-
-            print(self.db_name)
-            '''
+                    "data": False}    
+                
+            #return {"status":"error",
+                    #"data": "failed to provide username or id"}
+        
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -68,10 +65,22 @@ class User:
             cursor = db_connection.cursor()
             user_id = random.randint(0, self.max_safe_id)
 
+            print("user_info", user_info)
             # TODO: check to see if id already exists!! return error 
-
-
             
+            if self.exists(id = user_id)["data"] == True:
+                return {"status":"error",
+                    "data":"error: id already exists"}
+            
+            if self.exists(username = user_info["username"])["data"] == True:
+                return {"status":"error",
+                    "data":"error: username already exists"}
+            
+            #validity checks
+
+            user_data = (user_id, user_info["email"], user_info["username"], user_info["password"])
+            cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?);", user_data)
+            '''
             user_data = (user_id, user_info["email"], user_info["username"], user_info["password"])
             #are you sure you have all data in the correct format?
             cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?);", user_data)
@@ -95,6 +104,7 @@ class User:
                 return {"status": "error",
                     "data": self.to_dict(user_data)
                     }
+            '''
         
         except sqlite3.Error as error:
             return {"status":"error",
@@ -123,11 +133,14 @@ class User:
             '''
                 Insert your code here
             '''
-            new_query = f"SELECT * FROM {self.table_name}"
-            DB_output = cursor.execute(new_query)
-            print(self.db_name)
+            sql_select = f"SELECT * FROM {self.table_name};"
+            users_data = cursor.execute(sql_select).fetchall()
+            all_users = []
+            for user_data in users_data:
+                all_users.append(self.to_dict(user_data))
+            print("all_users", all_users)
             return {"status":"success",
-                    "data":len(self.db_name)}
+                    "data":all_users}
         
         except sqlite3.Error as error:
             return {"status":"error",
