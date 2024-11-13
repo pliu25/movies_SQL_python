@@ -36,11 +36,16 @@ class User:
             '''
             
             if username:
-                exists_check = cursor.execute(f"SELECT * FROM {self.table_name} WHERE username = ?;", (username, )).fetchall()
+                #exists_check = cursor.execute(f"SELECT * FROM {self.table_name} WHERE username = ?", (username,)).fetchall()
+                exists_check = cursor.execute(f"SELECT * FROM {self.table_name} WHERE username = {username}").fetchall()
+                #exists_check = cursor.execute('SELECT * FROM "{}" WHERE username = ?'.format(self.table_name.replace('"', '""')), (username,)).fetchall()
+                #print("username", username)
                 print("exists_check_username", exists_check)
+                print("exists_check_username2", f"SELECT * FROM {self.table_name} WHERE username = {username}")
              
             if id:
-                exists_check = cursor.execute(f"SELECT * FROM {self.table_name} WHERE id = ?;", (id, )).fetchall()
+                exists_check = cursor.execute(f"SELECT * FROM {self.table_name} WHERE id = ?", (id,)).fetchall()
+                #exists_check = cursor.execute('SELECT * FROM "{}" WHERE id = ?'.format(self.table_name.replace('"', '""')), (id,)).fetchall()
 
             #print("exists_check", exists_check)
             if exists_check:
@@ -120,6 +125,7 @@ class User:
             '''
                 Insert your code here
             '''
+
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
