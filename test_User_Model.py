@@ -31,6 +31,7 @@ class User_Model_Tests(unittest.TestCase):
     def setUpClass(self):
         #Runs once, before any tests are run
         self.yahtzee_db_name=f"{os.getcwd()}/yahtzeeDB.db"
+        print("self.yahtzee_db_name", self.yahtzee_db_name)
         self.table_name = "users"
         self.UserModel = User(self.yahtzee_db_name, self.table_name)
         self.users=[{"email":"cookie.monster@trinityschoolnyc.org",
@@ -92,7 +93,7 @@ class User_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-
+    
     def test_create_4_users(self):
         method = "users.create"
         results = []
@@ -154,6 +155,7 @@ class User_Model_Tests(unittest.TestCase):
                     "username":self.users[1]["username"],#email is duplicate
                     "password":"12345678920"}
        returned_user = self.UserModel.create(new_user)
+       #print("returned_user", returned_user)
        ensure_data_packet_formatting(self, returned_user, method, "error")
        try:  #check DB state
             db_connection = sqlite3.connect(self.yahtzee_db_name)
@@ -166,7 +168,7 @@ class User_Model_Tests(unittest.TestCase):
             print(error)
        finally:
             db_connection.close()
-
+    
     def test_create_user_with_incorrect_data_format(self):
        method = "users.create"
        for i in range(len(self.users)):
@@ -199,6 +201,7 @@ class User_Model_Tests(unittest.TestCase):
                     ]
        for bad_user in bad_user_data:
             returned_user = self.UserModel.create(bad_user)
+            #print("returned_user", returned_user)
        
             ensure_data_packet_formatting(self, returned_user, method, "error")
             try:  #check DB state
@@ -213,7 +216,7 @@ class User_Model_Tests(unittest.TestCase):
             finally:
                 db_connection.close()
 
-
+    
     def test_exists_id(self):
        method = "users.exists"
        user_ids={}
@@ -225,7 +228,7 @@ class User_Model_Tests(unittest.TestCase):
        self.assertEqual(packet["status"], "success", f"{method} should return success")
        self.assertTrue("data" in packet, f"{method} should return a data packet object in the correct format")
        self.assertTrue(packet["data"], f"{method} should return True for a user that does exist")
-
+    
     def test_exists_username(self):
        method = "users.exists"
        
@@ -237,7 +240,7 @@ class User_Model_Tests(unittest.TestCase):
        self.assertEqual(packet["status"], "success", f"{method} should return success")
        self.assertTrue("data" in packet, f"{method} should return a data packet object in the correct format")
        self.assertTrue(packet["data"], f"{method} should return True for a user that does exist")
-  
+    
     def test_exists_user_DNE(self):
        method = "users.exists"
        user_DNE = "apples"
@@ -282,7 +285,7 @@ class User_Model_Tests(unittest.TestCase):
        user_DNE = "oranges"
        results = self.UserModel.get(user_DNE) 
        ensure_data_packet_formatting(self, results, method, "error")
-    
+ 
     def test_get_all_many_users(self):
        method = "users.get_all"
        user_ids={}
@@ -382,7 +385,7 @@ class User_Model_Tests(unittest.TestCase):
             "password":"123TriniT"
         }
         returned_user = self.UserModel.update(updated_user_info)
-        
+        print("returned_user", returned_user)
         ensure_data_packet_formatting(self, returned_user, method, "success")
         #returned object matches update information
         self.assertEqual(returned_user["data"]["email"], updated_user_info["email"], f"{method}- returned email should match data of updated info")
@@ -494,7 +497,7 @@ class User_Model_Tests(unittest.TestCase):
         user_DNE = "bananas"
         results = self.UserModel.remove(user_DNE) 
         ensure_data_packet_formatting(self, results, method, "error")
-   
+  
 
 if __name__ == '__main__':
     unittest.main() 

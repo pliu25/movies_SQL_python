@@ -23,17 +23,20 @@ class User:
         results=cursor.execute(schema)
         db_connection.close()
     
-    def exists(self, username=None, id=None):
+    def exists(self, username=None, id=None, email=None):
         try: 
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
         
-        # Ensure at least one of username or id is provided
-            if not username and not id:
-                return {"status": "error", "data": "username or id not provided!"}
+            if email:
+                    exists_check = cursor.execute(
+                        f"SELECT * FROM {self.table_name} WHERE email = ?;", (email,)
+                    ).fetchall() 
+            elif not username and not id:
+                    return {"status": "error", "data": "username or id not provided!"}
 
             # Initialize exists_check to None
-            exists_check = None
+            #exists_check = None
 
             # Check by username if provided
             if username:
@@ -48,9 +51,10 @@ class User:
                     f"SELECT * FROM {self.table_name} WHERE id = ?;", (id,)
                 ).fetchall()
                 #print("exists_check_id:", exists_check)
+   
 
             # Determine if a match was found
-            if exists_check:
+            if len(exists_check) > 0:
                 return {"status": "success", "data": True}
             else:
                 return {"status": "success", "data": False}
@@ -77,6 +81,10 @@ class User:
             if self.exists(username = user_info["username"])["data"] == True:
                 return {"status":"error",
                     "data":"error: username already exists"}
+            #print("exists_check", self.exists(email = user_info["email"])["data"])
+            if self.exists(email = user_info["email"])["data"] == True:
+                return {"status":"error",
+                    "data":"error: email already exists"}
             
             #validity checks
             for char in user_info["username"]:
@@ -89,11 +97,10 @@ class User:
                 return {"status": "error",
                         "data": "password too short: password must be at least 8 characters"
                         } 
-            '''
+            
             if "@" not in user_info["email"] or "." not in user_info["email"]:
                 return {"status": "error",
                         "data": "bad email: email needs @ and ."}
-            '''
             
             for char in user_info["email"]:
                 if char.isalpha() == False and char != '@' and char != '.' and char.isnumeric() == False:
@@ -197,7 +204,7 @@ class User:
                         db_connection.commit()
 
                 return {"status":"success",
-                    "data": self.get(id = user_info["id"]["data"])}
+                    "data": self.get(id = user_info["id"])["data"]}
             
             else:
                 return {"status":"error",
