@@ -35,17 +35,13 @@ class User:
             elif not username and not id:
                     return {"status": "error", "data": "username or id not provided!"}
 
-            # Initialize exists_check to None
-            #exists_check = None
-
-            # Check by username if provided
+            #check if username & id exists
             if username:
                 exists_check = cursor.execute(
                     f"SELECT * FROM {self.table_name} WHERE username = ?;", (username,)
                 ).fetchall()
                 #print("exists_check_username:", exists_check)
 
-            # Check by id if provided
             if id:
                 exists_check = cursor.execute(
                     f"SELECT * FROM {self.table_name} WHERE id = ?;", (id,)
@@ -53,7 +49,7 @@ class User:
                 #print("exists_check_id:", exists_check)
    
 
-            # Determine if a match was found
+            # check
             if len(exists_check) > 0:
                 return {"status": "success", "data": True}
             else:
