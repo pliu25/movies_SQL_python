@@ -3,7 +3,7 @@ import sqlite3
 import os
 
 #test should inhabit the same folder as User_Model.py
-from User_Model import User
+from User_Model_starter import User
 
 def ensure_data_packet_formatting(self, packet, method, status):
     if status == "success":

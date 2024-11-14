@@ -79,17 +79,20 @@ class User:
             
             #validity checks
             for char in user_info["username"]:
-                if char.isalpha() == False:
+                if not (char.isalnum() or char == "-" or char == "_"):
                     return {"status": "error",
-                            "data": "bad username: no symbols or spaces"
+                            "data": "bad username: usernames can only include A-Z, a-z, 0-9, -, _"
                             }
+                
             if len(user_info["password"]) < 8:
                 return {"status": "error",
                         "data": "password too short: password must be at least 8 characters"
                         } 
+            '''
             if "@" not in user_info["email"] or "." not in user_info["email"]:
                 return {"status": "error",
-                        "data": "bad email: email needs @ and ."} 
+                        "data": "bad email: email needs @ and ."}
+            '''
             
             for char in user_info["email"]:
                 if char.isalpha() == False and char != '@' and char != '.' and char.isnumeric() == False:
