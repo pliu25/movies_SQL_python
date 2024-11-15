@@ -1,6 +1,7 @@
 # Pearl Liu #
 import sqlite3
 import random
+from datetime import datetime
 
 class Game:
     def __init__(self, db_name, table_name):
@@ -15,15 +16,15 @@ class Game:
                 CREATE TABLE {self.table_name} (
                     id INTEGER PRIMARY KEY UNIQUE,
                     name TEXT UNIQUE,
-                    created DATE,
-                    finished DATE
+                    created TIMESTAMP,
+                    finished TIMESTAMP
                 );
                 """
         cursor.execute(f"DROP TABLE IF EXISTS {self.table_name};")
         results=cursor.execute(schema)
         db_connection.close()
     
-    def exists(self, game_name=None):
+    def exists(self, game_name = None, id = None):
         try: 
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
@@ -45,6 +46,12 @@ class Game:
                     f"SELECT * FROM {self.table_name} WHERE name = ?;", (game_name,)
                 ).fetchall()
                 #print("exists_check_username:", exists_check)
+            
+            #check if id exists
+            if id:
+                exists_check = cursor.execute(
+                    f"SELECT * FROM {self.table_name} WHERE id = ?;", (id,)
+                ).fetchall()
    
             # check
             if len(exists_check) > 0:
@@ -57,54 +64,39 @@ class Game:
         finally:
             db_connection.close() 
     
-    def create(self, user_info):
+    def create(self, game_info):
         try: 
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
-            user_id = random.randint(0, self.max_safe_id)
+            game_id = random.randint(0, self.max_safe_id)
 
-            print("user_info", user_info)
+            print("game_info", game_info)
             # TODO: check to see if id already exists!! return error 
             
-            if self.exists(id = user_id)["data"] == True:
+            if self.exists(id = game_id)["data"] == True:
                 return {"status":"error",
                     "data":"error: id already exists"}
             
-            if self.exists(username = user_info["username"])["data"] == True:
-                return {"status":"error",
-                    "data":"error: username already exists"}
-            #print("exists_check", self.exists(email = user_info["email"])["data"])
-            if self.exists(email = user_info["email"])["data"] == True:
-                return {"status":"error",
-                    "data":"error: email already exists"}
+            if self.exists(game_name = game_info["name"])["data"] == True:
+                return {"status": "error",
+                    "data": "error: game name already exists"}
+            #print("exists_check", self.exists(email = game_info["email"])["data"])
             
             #validity checks
-            for char in user_info["username"]:
+            for char in game_info["name"]:
                 if not (char.isalnum() or char == "-" or char == "_"):
                     return {"status": "error",
-                            "data": "bad username: usernames can only include A-Z, a-z, 0-9, -, _"
+                            "data": "bad game name: game names can only include A-Z, a-z, 0-9, -, _"
                             }
-                
-            if len(user_info["password"]) < 8:
-                return {"status": "error",
-                        "data": "password too short: password must be at least 8 characters"
-                        } 
-            
-            if "@" not in user_info["email"] or "." not in user_info["email"]:
-                return {"status": "error",
-                        "data": "bad email: email needs @ and ."}
-            
-            for char in user_info["email"]:
-                if char.isalpha() == False and char != '@' and char != '.' and char.isnumeric() == False:
-                    return {"status": "error",
-                            "data": "bad email: invalid"} 
 
-            user_data = (user_id, user_info["email"], user_info["username"], user_info["password"])
-            cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?);", user_data)
+            created_date = datetime.now()
+
+            game_data = (game_id, game_info["name"], created_date, created_date)
+            cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?);", game_data)
             db_connection.commit()
 
             return {"status": "success",
-                    "data": self.to_dict(user_data)
+                    "data": self.to_dict(game_data)
                     }
         
         except sqlite3.Error as error:
@@ -114,7 +106,7 @@ class Game:
         finally:
             db_connection.close()
     
-    def get(self, username=None, id=None):
+    def get(self, game_name=None, id=None):
         try: 
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
@@ -122,22 +114,22 @@ class Game:
                 #Insert your code here
             '''
 
-            if username:
-                if self.exists(username=username)["data"] == False:
+            if game_name:
+                if self.exists(game_name=game_name)["data"] == False:
                     return {"status": "error",
-                        "data": "player with this username does not exist!"}
+                        "data": "game with this name does not exist!"}
                 
-                fetch_username = cursor.execute(
-                    f"SELECT * FROM {self.table_name} WHERE username = ?;", (username,)
+                fetch_game_name = cursor.execute(
+                    f"SELECT * FROM {self.table_name} WHERE name = ?;", (game_name,)
                 ).fetchone()
                 return {"status": "success",
-                        "data": self.to_dict(fetch_username)}
+                        "data": self.to_dict(fetch_game_name)}
 
 
             if id: 
                 if self.exists(id=id)["data"] == False:
                     return {"status": "error",
-                        "data": "player with this id does not exist!"}
+                        "data": "game with this id does not exist!"}
                 
                 fetch_id = cursor.execute(
                     f"SELECT * FROM {self.table_name} WHERE id = ?;", (id,)
@@ -163,13 +155,13 @@ class Game:
             '''
                 #Insert your code here
             '''
-            fetch_all_users = cursor.execute(f"SELECT * FROM {self.table_name};").fetchall()
-            all_users = []
-            for user_data in fetch_all_users:
-                all_users.append(self.to_dict(user_data))
-            print("all_users", all_users)
+            fetch_all_games = cursor.execute(f"SELECT * FROM {self.table_name};").fetchall()
+            all_games = []
+            for game_data in fetch_all_games:
+                all_games.append(self.to_dict(game_data))
+            print("all_users", all_games)
             return {"status":"success",
-                    "data":all_users}
+                    "data":all_games}
         
         except sqlite3.Error as error:
             return {"status":"error",
@@ -177,26 +169,49 @@ class Game:
         finally:
             db_connection.close()
 
-    def update(self, user_info): 
+    def is_finished(self, game_name) :
+        try: 
+            db_connection = sqlite3.connect(self.db_name)
+            cursor = db_connection.cursor()
+            game_id = random.randint(0, self.max_safe_id)
+
+            # TODO: check to see if id already exists!! return error 
+            #check if created time and finished time is different (update updates this time)
+            
+
+            #return {"status": "success",
+                #"data": self.to_dict(game_data)
+                    #}
+        
+        except sqlite3.Error as error:
+            return {"status":"error",
+                    "data":error}
+        
+        finally:
+            db_connection.close()
+
+    def update(self, game_info): 
         try: 
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
             '''
                 #Insert your code here
             '''
-            if not user_info:
+            print("game_info", game_info)
+            if not game_info:
                 return {"status":"error",
-                    "data": "user info not provided!"}
+                    "data": "game info not provided!"}
             
-            if self.exists(id = user_info["id"])["data"] == True:
-                for column in user_info:
+            if self.exists(id = game_info["id"])["data"] == True:
+                for column in game_info:
                     if column != "id":
-                        #cursor.execute(f"UPDATE {self.table_name} SET {column} = '{user_info[column]}' WHERE id = '{user_info['id']}';")
-                        cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (user_info[column], user_info["id"]))
+                        
+                        cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (game_info[column], game_info["id"]))
+                        cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE finished = ?;", (game_info[column], datetime.now()))
                         db_connection.commit()
 
                 return {"status":"success",
-                    "data": self.get(id = user_info["id"])["data"]}
+                    "data": self.get(id = game_info["id"], finished = game_info["finished"])["data"]}
             
             else:
                 return {"status":"error",
@@ -280,18 +295,18 @@ if __name__ == '__main__':
         "created":"2024-11-15 16:50:55",
         "finished":"2024-11-15 16:53:55"
     }
-    #create_check = Games.create(game_details)
-    #print("create_check", create_check)
+    create_check = Games.create(game_details)
+    print("create_check", create_check)
     exists = Games.exists(game_name = game_details["name"])
     print("exists", exists)
-    '''
-    updated_user_details={
-        "email":"pearl.liu25@trinityschoolnyc.org",
-        "username": "pliu25",
-        "password": "12345678"
+    
+    updated_game_details={
+        "name":"yay",
+        "created":"2024-11-15 16:50:55",
+        "finished":"2024-11-15 16:53:55"
     }
-    update_check = Users.create(updated_user_details)
+    update_check = Games.create(updated_game_details)
     print("update_check", update_check)
-    print("remove", Users.remove("justingohde"))
-    '''
+    #print("remove", Games.remove("justingohde"))
+    
 

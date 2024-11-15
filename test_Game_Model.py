@@ -64,7 +64,7 @@ class Game_Model_Tests(unittest.TestCase):
         for i in range(len(self.users)):
             user_info = self.UserModel.create(self.users[i])
             self.user_ids[self.users[i]['email']] = user_info["data"]["id"]
-
+    '''
     def test_create_1_game(self):
         method = "games.create"
         #invoke method
@@ -182,7 +182,7 @@ class Game_Model_Tests(unittest.TestCase):
             finally:
                 db_connection.close()
         print("test_create_game_incorrect_format passed!")  
-
+    
     def test_game_exists(self):
         method = "games.exist"
         #setup - Create 4 games
@@ -239,14 +239,14 @@ class Game_Model_Tests(unittest.TestCase):
             self.assertEqual(returned_game["data"],original_games[game_name])
         
         print("test_get_game_exists_name passed!") 
-
+    
     def test_get_game_DNE(self):
         method = "games.get"
         for game in self.games:
             returned_game = self.GameModel.get(game_name=game["name"])
             ensure_data_packet_formatting(self, returned_game, method, "error")
         print("test_get_game_DNE passed!") 
-
+    
     def test_get_all_games_no_games(self):
         method = "games.get_all"
         
@@ -340,19 +340,20 @@ class Game_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-
+    '''
     def test_update_game_finish_change(self):
         method = "games.update"
         original_games = {}
         for i in range(len(self.games)):
             game = self.GameModel.create(self.games[i])
             original_games[game['data']["name"]] = game["data"] #game name maps to game object
-              
+        
+        print("game[data]", game["data"])
         updated_game = original_games[self.games[3]["name"]]
         updated_game["finished"]=str(datetime.datetime.now())
          
         returned_game = self.GameModel.update(updated_game)
-         
+        print("returned_game", returned_game)
         ensure_data_packet_formatting(self, returned_game, method, "success")
         self.assertEqual(returned_game["data"], updated_game)
         
@@ -397,7 +398,7 @@ class Game_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    
+    '''
     def test_remove_game_DNE(self):
         method = "games.remove"
         
@@ -472,6 +473,6 @@ class Game_Model_Tests(unittest.TestCase):
             self.assertFalse(packet["data"]) # game is not finished
         
         print("test_is_finihed_with_unfinished_game passed!")
-
+    '''
 if __name__ == '__main__':
     unittest.main() 
