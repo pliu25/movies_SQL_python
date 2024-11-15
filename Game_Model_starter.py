@@ -39,7 +39,7 @@ class Game:
             if not game_name:
                 return {"status": "error", "data": "username or id not provided!"}
 
-            #check if username & id exists
+            #check if name exists
             if game_name:
                 exists_check = cursor.execute(
                     f"SELECT * FROM {self.table_name} WHERE name = ?;", (game_name,)
@@ -57,7 +57,6 @@ class Game:
         finally:
             db_connection.close() 
     
-        
     def create(self, user_info):
         try: 
             db_connection = sqlite3.connect(self.db_name)
@@ -120,7 +119,7 @@ class Game:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
             '''
-                Insert your code here
+                #Insert your code here
             '''
 
             if username:
@@ -162,7 +161,7 @@ class Game:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
             '''
-                Insert your code here
+                #Insert your code here
             '''
             fetch_all_users = cursor.execute(f"SELECT * FROM {self.table_name};").fetchall()
             all_users = []
@@ -183,7 +182,7 @@ class Game:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
             '''
-                Insert your code here
+                #Insert your code here
             '''
             if not user_info:
                 return {"status":"error",
@@ -214,7 +213,7 @@ class Game:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
             '''
-                Insert your code here
+                #Insert your code here
             '''
 
             if (self.exists(username=username)["data"] == True):
@@ -235,17 +234,17 @@ class Game:
             db_connection.close()
     
     def to_dict(self, user_tuple):
-        '''Utility function which converts the tuple returned from a SQLlite3 database
-           into a Python dictionary
+        '''#Utility function which converts the tuple returned from a SQLlite3 database
+           #into a Python dictionary
         '''
         user_dict={}
         if user_tuple:
             user_dict["id"]=user_tuple[0]
-            user_dict["email"]=user_tuple[1]
-            user_dict["username"]=user_tuple[2]
-            user_dict["password"]=user_tuple[3]
+            user_dict["name"]=user_tuple[1]
+            user_dict["created"]=str(user_tuple[2])
+            user_dict["finished"]=str(user_tuple[3])
         return user_dict
-
+    
 if __name__ == '__main__':
     '''
     import os
@@ -271,20 +270,21 @@ if __name__ == '__main__':
     import os
     print("Current working directory:", os.getcwd())
     DB_location=f"{os.getcwd()}/yahtzeeDB.db"
-    table_name = "users"
+    table_name = "games"
     
-    Users = Game(DB_location, table_name) 
-    Users.initialize_table()
+    Games = Game(DB_location, table_name) 
+    Games.initialize_table()
 
-    user_details={
-        "email":"justin.gohde@trinityschoolnyc.org",
-        "username":"justingohde",
-        "password":"123TriniT"
+    game_details={
+        "name":"woohoo",
+        "created":"2024-11-15 16:50:55",
+        "finished":"2024-11-15 16:53:55"
     }
-    create_check = Users.create(user_details)
-    print("create_check", create_check)
-    exists = Users.exists(username = user_details["username"])
+    #create_check = Games.create(game_details)
+    #print("create_check", create_check)
+    exists = Games.exists(game_name = game_details["name"])
     print("exists", exists)
+    '''
     updated_user_details={
         "email":"pearl.liu25@trinityschoolnyc.org",
         "username": "pliu25",
@@ -293,4 +293,5 @@ if __name__ == '__main__':
     update_check = Users.create(updated_user_details)
     print("update_check", update_check)
     print("remove", Users.remove("justingohde"))
+    '''
 

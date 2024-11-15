@@ -32,7 +32,7 @@ class Game_Model_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         #Runs once, before any tests are run
-        self.yahtzee_db_name=f"{os.getcwd()}/Models/yahtzeeDB.db"
+        self.yahtzee_db_name=f"{os.getcwd()}/yahtzeeDB.db"
         self.games_table_name = "games"
         self.users_table_name = "users"
         self.UserModel = User(self.yahtzee_db_name, self.users_table_name)
