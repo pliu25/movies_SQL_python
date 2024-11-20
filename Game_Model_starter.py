@@ -169,27 +169,6 @@ class Game:
         finally:
             db_connection.close()
 
-    def is_finished(self, game_name) :
-        try: 
-            db_connection = sqlite3.connect(self.db_name)
-            cursor = db_connection.cursor()
-            game_id = random.randint(0, self.max_safe_id)
-
-            # TODO: check to see if id already exists!! return error 
-            #check if created time and finished time is different (update updates this time)
-            
-
-            #return {"status": "success",
-                #"data": self.to_dict(game_data)
-                    #}
-        
-        except sqlite3.Error as error:
-            return {"status":"error",
-                    "data":error}
-        
-        finally:
-            db_connection.close()
-
     def update(self, game_info): 
         try: 
             db_connection = sqlite3.connect(self.db_name)
@@ -223,7 +202,40 @@ class Game:
         finally:
             db_connection.close()
 
-    def remove(self, username): 
+    def is_finished(self, game_name):
+        try: 
+            db_connection = sqlite3.connect(self.db_name)
+            cursor = db_connection.cursor()
+            #game_id = random.randint(0, self.max_safe_id)
+
+            # TODO: check to see if id already exists!! return error 
+            #check if created time and finished time is different (update updates this time)
+            
+
+            if game_name: 
+                if self.exists(game_name = game_name)["data"] == False:
+                    return {"status":"error",
+                    "data": "error: game name doesn't exist"}
+                
+                created, finished = cursor.execute(f"SELECT created, finished from {self.table_name} WHERE name = ?", (game_name, )).fetchone()
+                if created != finished: 
+                    return {"status":"success",
+                        "data": True}
+                else:
+                    return {"status":"success",
+                        "data": False}
+            else:
+                return {"status":"error",
+                    "data": "error: game name not provided"}
+             
+        except sqlite3.Error as error:
+            return {"status":"error",
+                    "data":error}
+        
+        finally:
+            db_connection.close()
+
+    def remove(self, game_name): 
         try: 
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
@@ -231,9 +243,9 @@ class Game:
                 #Insert your code here
             '''
 
-            if (self.exists(username=username)["data"] == True):
-                remove_user = self.get(username=username)["data"]
-                cursor.execute(f"DELETE FROM {self.table_name} WHERE username = '{username}';")
+            if (self.exists(game_name=game_name)["data"] == True):
+                remove_user = self.get(game_name=game_name)["data"]
+                cursor.execute(f"DELETE FROM {self.table_name} WHERE name = '{game_name}';")
                 db_connection.commit()
 
                 return {"status":"success",

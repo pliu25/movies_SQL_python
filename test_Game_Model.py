@@ -64,7 +64,7 @@ class Game_Model_Tests(unittest.TestCase):
         for i in range(len(self.users)):
             user_info = self.UserModel.create(self.users[i])
             self.user_ids[self.users[i]['email']] = user_info["data"]["id"]
-    '''
+    
     def test_create_1_game(self):
         method = "games.create"
         #invoke method
@@ -282,7 +282,7 @@ class Game_Model_Tests(unittest.TestCase):
             self.assertEqual(game, original_games[game["name"]])
         
         print("test_get_all_games_many_games passed!")
-
+    
     def test_update_game_name_change(self):
         method = "games.update"
         original_games = {}
@@ -311,7 +311,7 @@ class Game_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    
+    '''
     def test_update_game_name_change_already_taken(self):
         method = "games.update"
         original_games = {}
@@ -340,7 +340,7 @@ class Game_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    '''
+    
     def test_update_game_finish_change(self):
         method = "games.update"
         original_games = {}
@@ -435,7 +435,7 @@ class Game_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-
+    '''
     def test_is_finished_with_finished_game(self):
         method = "games.is_finished"
         
@@ -448,8 +448,9 @@ class Game_Model_Tests(unittest.TestCase):
         updated_game["finished"]=str(datetime.datetime.now())
          
         returned_game = self.GameModel.update(updated_game)
-        
+        print("returned_game", returned_game)
         packet = self.GameModel.is_finished(updated_game["name"])
+        print("packet", packet)
         self.assertTrue("status" in packet, f"{method} should return a data packet object in the correct format")
         self.assertEqual(packet["status"], "success", f"{method} should return success")
         self.assertTrue("data" in packet, f"{method} should return a data packet object in the correct format")
