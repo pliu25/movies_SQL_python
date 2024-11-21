@@ -291,9 +291,10 @@ class Game_Model_Tests(unittest.TestCase):
             original_games[game['data']["name"]] = game["data"] #game name maps to game object
               
         updated_game = original_games[self.games[3]["name"]]
-        print("updated_game", updated_game)
         updated_game["name"]="my_new_game_name"
         returned_games = self.GameModel.update(updated_game)
+        print("updated_game", updated_game)
+        print("returned_games", returned_games)
         ensure_data_packet_formatting(self, returned_games, method, "success")
         self.assertEqual(returned_games["data"], updated_game)
         
@@ -312,7 +313,7 @@ class Game_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    '''
+    
     def test_update_game_name_change_already_taken(self):
         method = "games.update"
         original_games = {}
@@ -399,7 +400,7 @@ class Game_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    '''
+    
     def test_remove_game_DNE(self):
         method = "games.remove"
         
