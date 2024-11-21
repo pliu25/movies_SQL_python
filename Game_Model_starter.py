@@ -181,17 +181,20 @@ class Game:
                 return {"status":"error",
                     "data": "game info not provided!"}
             
-            if self.exists(id = game_info["id"])["data"] == True:
+            if (self.exists(id = game_info["id"])["data"] == True):
                 for column in game_info:
-                    if column != "id" '''or column != "finished"''':
+                    if column != "id":
                         cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (game_info[column], game_info["id"]))
-                        #cursor.execute(f"UPDATE {self.table_name} SET {game_info["finished"]} = ? WHERE id = ?;", (datetime.now(), game_info["id"]))
-                        #cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE finished = ?;", (game_info[column], datetime.now()))
+                        '''
+                        exists_check = cursor.fetchall()
+                        if len(exists_check) > 0:
+                            return {"status":"error",
+                                "data": "game name already exists!"} 
+                        '''
                         db_connection.commit()
 
                 return {"status":"success",
                     "data": self.get(id = game_info["id"])["data"]}
-            
             else:
                 return {"status":"error",
                     "data": "updated information doesn't exist!"}
@@ -314,8 +317,8 @@ if __name__ == '__main__':
     
     updated_game_details={
         'name': 'my_new_game_name', 
-        'created': '2024-11-20 08:30:57.431729', 
-        'finished': '2024-11-20 08:30:57.431729'
+        'created': '2024-11-20 19:54:49.629427', 
+        'finished': '2024-11-20 19:54:49.629427'
     }
     update_check = Games.create(updated_game_details)
     print("update_check", update_check)
