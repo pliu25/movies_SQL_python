@@ -291,10 +291,11 @@ class Game_Model_Tests(unittest.TestCase):
             original_games[game['data']["name"]] = game["data"] #game name maps to game object
               
         updated_game = original_games[self.games[3]["name"]]
+        #print("updated_game", updated_game)
         updated_game["name"]="my_new_game_name"
         returned_games = self.GameModel.update(updated_game)
-        print("updated_game", updated_game)
-        print("returned_games", returned_games)
+        #print("id", updated_game["id"])
+        #print("returned_games", returned_games)
         ensure_data_packet_formatting(self, returned_games, method, "success")
         self.assertEqual(returned_games["data"], updated_game)
         
@@ -323,8 +324,10 @@ class Game_Model_Tests(unittest.TestCase):
               
         original_game = original_games[self.games[3]["name"]]
         updated_game = original_game.copy()
+        #print("updated_game", updated_game)
         updated_game["name"]=self.games[2]["name"] #already exists
         returned_games = self.GameModel.update(updated_game)
+        #print("returned_games", returned_games)
         ensure_data_packet_formatting(self, returned_games, method, "error")
         
         #check DB state
@@ -353,7 +356,7 @@ class Game_Model_Tests(unittest.TestCase):
         print("game[data]", game["data"])
         updated_game = original_games[self.games[3]["name"]]
         updated_game["finished"]=str(datetime.datetime.now())
-         
+        print("updated_game", updated_game)
         returned_game = self.GameModel.update(updated_game)
         print("returned_game", returned_game)
         ensure_data_packet_formatting(self, returned_game, method, "success")
