@@ -4,9 +4,9 @@ import os
 import json
 
 #test should inhabit the same folder
-from Game_Model import Game
-from User_Model import User
-from Scorecard_Model import Scorecard
+from Game_Model_starter import Game
+from User_Model_starter import User
+from Scorecard_Model_starter import Scorecard
 
 def ensure_data_packet_formatting(self, packet, method, status):
     if status == "success":
@@ -49,7 +49,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         #Runs once, before any tests are run
-        self.yahtzee_db_name=f"{os.getcwd()}/Models/yahtzeeDB.db"
+        self.yahtzee_db_name=f"{os.getcwd()}/yahtzeeDB.db"
         self.scorecard_table_name = "scorecards"
         self.user_table_name = "users"
         self.game_table_name = "games"
