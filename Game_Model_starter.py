@@ -176,23 +176,25 @@ class Game:
             '''
                 #Insert your code here
             '''
-            print("game_info", game_info)
+            #print("game_info", game_info)
             if not game_info:
                 return {"status":"error",
                     "data": "game info not provided!"}
-            print("get", self.get(id=game_info["id"]))
-            print("exists", self.exists(id=game_info["id"]))
+            #print("get", self.get(id=game_info["id"]))
+            #print("exists", self.exists(id=game_info["id"]))
             if self.exists(id = game_info["id"])["data"] == True:
                 for column in game_info:
-                    if column != "id" '''or column != "finished"''':
-                        if game_info[column] != game_info["name"]:
-                            cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (game_info[column], game_info["id"]))
-                            #cursor.execute(f"UPDATE {self.table_name} SET {game_info["finished"]} = ? WHERE id = ?;", (datetime.now(), game_info["id"]))
-                            #cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE finished = ?;", (game_info[column], datetime.now()))
-                            db_connection.commit()
+                    if column != "id":
+                        if(self.get(id=game_info["id"])["data"]["name"] != game_info["name"]):
+                            if self.exists(game_name=game_info["name"])["data"] == False:
+                                cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (game_info[column], game_info["id"]))
+                                db_connection.commit()
+                            else:
+                                return {"status":"error",
+                                    "data":"game name already exists!"}
                         else:
-                            return {"status":"error",
-                                "data": "game name already exists!"}
+                            cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (game_info[column], game_info["id"]))
+                            db_connection.commit()
 
                 return {"status":"success",
                     "data": self.get(id = game_info["id"])["data"]}

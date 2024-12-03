@@ -440,7 +440,7 @@ class Game_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    '''
+
     def test_is_finished_with_finished_game(self):
         method = "games.is_finished"
         
@@ -479,6 +479,6 @@ class Game_Model_Tests(unittest.TestCase):
             self.assertFalse(packet["data"]) # game is not finished
         
         print("test_is_finihed_with_unfinished_game passed!")
-    '''
+
 if __name__ == '__main__':
     unittest.main() 
