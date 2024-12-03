@@ -38,7 +38,7 @@ class Scorecard:
             cursor = db_connection.cursor()
             card_id = random.randint(0, self.max_safe_id)
 
-            
+
    
         except sqlite3.Error as error:
             return {"status":"error",
@@ -51,6 +51,31 @@ class Scorecard:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
 
+            if name:
+                sc_info = cursor.execute(f"SELECT * FROM {self.table_name} WHERE name = ?;", (name,)).fetchone()
+
+                if sc_info:
+                    return {"status": "success",
+                        "data": self.to_dict(sc_info)}
+                else:
+                    return {"status": "error",
+                        "data": "scorecard not found!"}
+
+
+            if id: 
+                sc_info = cursor.execute(f"SELECT * FROM {self.table_name} WHERE id = ?;", (id,)).fetchone()
+
+                if sc_info:
+                    return {"status": "success",
+                        "data": self.to_dict(sc_info)}
+                else:
+                    return {"status": "error",
+                        "data": "scorecard not found!"}
+            
+            else:
+                return {"status": "error",
+                        "data": "scorecard name or id not provided!"}
+            
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
