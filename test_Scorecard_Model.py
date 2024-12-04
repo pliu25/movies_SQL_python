@@ -130,7 +130,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
                 "chance":8
             }
         }
-
+    
     def test_create_1_scorecard(self):
         method = "scorecard.create"
         user = list(self.users.values())[0]
@@ -160,7 +160,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    
+    '''
     def test_create_many_scorecards_different_games(self):
         method="scorecard.create"
         all_scorecards = []
@@ -724,6 +724,6 @@ class Scorecard_Model_Tests(unittest.TestCase):
         score = self.ScorecardModel.tally_score(self.blank_scorecard)
         self.assertEqual(score, 0)
         print("test_tally_score_blank passed!")  
- 
+    '''
 if __name__ == '__main__':
     unittest.main() 

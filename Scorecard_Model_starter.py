@@ -38,6 +38,25 @@ class Scorecard:
             cursor = db_connection.cursor()
             card_id = random.randint(0, self.max_safe_id)
 
+            
+            #validity checks
+            '''
+            for char in game_info["name"]:
+                if not (char.isalnum() or char == "-" or char == "_"):
+                    return {"status": "error",
+                            "data": "bad game name: game names can only include A-Z, a-z, 0-9, -, _"
+                            }
+            '''
+
+            turn_order = 1
+
+            sc_data = (card_id, game_id, user_id, json.dumps(Scorecard.create_blank_score_info(self)), turn_order, name)
+            cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?, ?, ?);", sc_data)
+            db_connection.commit()
+
+            return {"status": "success",
+                    "data": self.to_dict(sc_data)
+                    }
 
    
         except sqlite3.Error as error:
@@ -87,6 +106,14 @@ class Scorecard:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
 
+            fetch_all_cards = cursor.execute(f"SELECT * FROM {self.table_name};").fetchall()
+            all_cards = []
+            for card_data in fetch_all_cards:
+                all_cards.append(self.to_dict(card_data))
+            print("all_users", all_cards)
+            return {"status":"success",
+                    "data":all_cards}
+
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -97,6 +124,9 @@ class Scorecard:
         try: 
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
+
+            print(game_name)
+
 
         except sqlite3.Error as error:
             return {"status":"error",
@@ -197,3 +227,5 @@ if __name__ == '__main__':
     Games.initialize_table()
     Scorecards = Scorecard(DB_location, "scorecards", "users", "games")
     Scorecards.initialize_table()
+
+    print(Scorecards.create_blank_score_info)
