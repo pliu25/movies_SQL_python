@@ -49,7 +49,7 @@ class Scorecard:
             '''
 
             turn_order = 1
-
+            #turn_order+=1
             sc_data = (card_id, game_id, user_id, json.dumps(Scorecard.create_blank_score_info(self)), turn_order, name)
             cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?, ?, ?);", sc_data)
             db_connection.commit()
@@ -57,7 +57,6 @@ class Scorecard:
             return {"status": "success",
                     "data": self.to_dict(sc_data)
                     }
-
    
         except sqlite3.Error as error:
             return {"status":"error",

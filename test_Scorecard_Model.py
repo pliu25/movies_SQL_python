@@ -160,7 +160,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    '''
+    
     def test_create_many_scorecards_different_games(self):
         method="scorecard.create"
         all_scorecards = []
@@ -197,7 +197,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    
+    '''
     def test_create_many_scorecards_same_game(self):
         method="scorecard.create"
         all_scorecards = []
