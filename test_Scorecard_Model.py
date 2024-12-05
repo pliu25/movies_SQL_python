@@ -250,6 +250,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
                         "username":"bowser_official",
                         "password":"IamBOWSER4Real"}
         new_user = self.UserModel.create(new_user_info)['data']
+        print("new_user", new_user)
         new_scorecard = self.ScorecardModel.create(game["id"], new_user["id"], game["name"]+"|"+new_user["username"])
         print("new_scorecard", new_scorecard)
         ensure_data_packet_formatting(self, new_scorecard, method, "error") #max of 4 players per game

@@ -99,8 +99,8 @@ class User:
                         "data": "bad email: email needs @ and ."}
             
             for char in user_info["email"]:
-                if char.isalpha() == False and char != '@' and char != '.' and char.isnumeric() == False:
-                    return {"status": "error",
+                if char == " ":
+                    return {"status": "error", 
                             "data": "bad email: invalid"} 
 
             user_data = (user_id, user_info["email"], user_info["username"], user_info["password"])
