@@ -40,8 +40,8 @@ class Scorecard:
             
             #print("user_id", user_id)
             categories = json.dumps(Scorecard.create_blank_score_info(self))
-            results = cursor.execute(f"SELECT * FROM {self.table_name} WHERE game_id = {game_id};").fetchall()
-            game_count = len(results)
+            scorecards = cursor.execute(f"SELECT * FROM {self.table_name} WHERE game_id = {game_id};").fetchall()
+            game_count = len(scorecards)
             turn_order = game_count + 1
 
             if turn_order > 4:
@@ -57,7 +57,7 @@ class Scorecard:
                     }
             
             sc_data = (card_id, game_id, user_id, categories, turn_order, name)
-            print(sc_data)
+            #print(sc_data)
             cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?, ?, ?);", sc_data)
             db_connection.commit()
 
@@ -200,6 +200,23 @@ class Scorecard:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
 
+            scorecards = cursor.execute(f"SELECT * FROM {self.table_name} WHERE id = {id};").fetchall()
+
+            if scorecards:
+                if name:
+                    cursor.execute(f"UPDATE {self.table_name} SET name = ? WHERE id = ?;", (name, id))
+                    db_connection.commit()
+                if categories:
+                    cursor.execute(f"UPDATE {self.table_name} SET categories = ? WHERE id = ?;", (json.dumps(categories), id))
+                    db_connection.commit()
+
+                return {"status":"success",
+                        "data":self.get(id=id)["data"]}
+            else:
+                return {"status":"error",
+                    "data":"scorecard doesn't exist!"}
+
+
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -210,6 +227,20 @@ class Scorecard:
         try: 
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
+
+            scorecards = cursor.execute(f"SELECT * FROM {self.table_name} WHERE id = {id};").fetchall()
+
+            if scorecards:
+                remove_card = self.get(id=id)["data"]
+                cursor.execute(f"DELETE FROM {self.table_name} WHERE id = '{id}';")
+                db_connection.commit()
+
+                return {"status":"success",
+                        "data":remove_card}
+            else:
+                return {"status":"error",
+                    "data":"scorecard doesn't exist!"}
+
 
         except sqlite3.Error as error:
             return {"status":"error",
@@ -252,7 +283,8 @@ class Scorecard:
 
     def tally_score(self, score_info):
         total_score = 0
-   
+        dice_rolls = 0
+        
         return total_score
 
 if __name__ == '__main__':

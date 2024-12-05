@@ -265,11 +265,14 @@ class Scorecard_Model_Tests(unittest.TestCase):
         game = list(self.games.values())[0]
         new_scorecard_1 = self.ScorecardModel.create(game["id"], user["id"], game["name"]+"|"+user["username"])
         ensure_data_packet_formatting(self, new_scorecard_1, method, "success")
+        print("new_scorecard_1", new_scorecard_1)
         #add new scorecard to same game with same user
         new_scorecard_2 = self.ScorecardModel.create(game["id"], user["id"], game["name"]+"|"+user["username"])
         ensure_data_packet_formatting(self, new_scorecard_2, method, "error")
+        print("new_scorecard_2", new_scorecard_2)
 
         all_scorecards_returned = self.ScorecardModel.get_all()['data']
+        print("all_scorecards_returned", all_scorecards_returned)
         self.assertTrue(len(all_scorecards_returned)==1) #scorecard has not been added to DB
         print("test_create_too_many_scorecards_same_game_same_user passed!")  
     
@@ -521,7 +524,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
         for game_name_to_check in all_game_names:
             self.assertIn(game_name_to_check, all_user_game_names['data'])
         print("test_get_all_user_game_names_many_games passed!") 
-    '''
+    
     def test_update_scorecard_exists(self):
         #only tests updating categories since that will be the way we use update in pur project
         method = "scorecard.update"
@@ -726,6 +729,6 @@ class Scorecard_Model_Tests(unittest.TestCase):
         score = self.ScorecardModel.tally_score(self.blank_scorecard)
         self.assertEqual(score, 0)
         print("test_tally_score_blank passed!")  
-    '''
+
 if __name__ == '__main__':
     unittest.main() 
