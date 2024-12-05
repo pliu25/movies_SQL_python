@@ -116,12 +116,12 @@ class Scorecard:
             cursor = db_connection.cursor()
 
             fetch_all_cards = cursor.execute(f"SELECT * FROM {self.table_name};").fetchall()
-            all_cards = []
+            sc_list = []
             for card_data in fetch_all_cards:
-                all_cards.append(self.to_dict(card_data))
+                sc_list.append(self.to_dict(card_data))
             #print("all_users", all_cards)
             return {"status":"success",
-                    "data":all_cards}
+                    "data":sc_list}
 
         except sqlite3.Error as error:
             return {"status":"error",
@@ -135,15 +135,15 @@ class Scorecard:
             cursor = db_connection.cursor()
 
             all_cards = self.get_all()["data"]
-            game_cards = []
+            print("all_cards", all_cards)
+            sc_list = []
             for card in all_cards:
                 card_game_name = card["name"].split("|")[0]
                 if card_game_name == game_name:
-                    game_cards.append(card_game_name)
+                    sc_list.append(card)
 
-            print("game_cards", game_cards)
             return {"status":"success",
-                    "data":game_cards}
+                    "data":sc_list}
 
 
 
