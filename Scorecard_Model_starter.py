@@ -283,8 +283,20 @@ class Scorecard:
 
     def tally_score(self, score_info):
         total_score = 0
-        dice_rolls = 0
+        upper_sum = 0
+        lower_sum = 0
+
+        for value in score_info["upper"]:
+            if score_info["upper"][value] > -1:
+                upper_sum += score_info["upper"][value]
+        if upper_sum >= 63:
+            upper_sum += 35
+        for value in score_info["lower"]:
+            if score_info["lower"][value] > -1:
+                lower_sum += score_info["lower"][value]
         
+        total_score = upper_sum + lower_sum
+
         return total_score
 
 if __name__ == '__main__':
