@@ -393,7 +393,7 @@ class User_Model_Tests(unittest.TestCase):
             "password":"123TriniT"
         }
         returned_user = self.UserModel.update(updated_user_info)
-        #print("1change returned user", returned_user)
+       #print("1change returned user", returned_user)
         ensure_data_packet_formatting(self, returned_user, method, "success")
         #returned object matches update information
         self.assertEqual(returned_user["data"]["email"], updated_user_info["email"], f"{method}- returned email should match data of updated info")
@@ -587,8 +587,8 @@ class User_Model_Tests(unittest.TestCase):
             returned_user = self.UserModel.update(bad_user)
        
             ensure_data_packet_formatting(self, returned_user, method, "error")
-            print("returned_user", returned_user)
-            print("bad_user", bad_user)
+            #print("returned_user", returned_user)
+            #print("bad_user", bad_user)
             try:  #check DB state
                 db_connection = sqlite3.connect(self.yahtzee_db_name)
                 cursor = db_connection.cursor()

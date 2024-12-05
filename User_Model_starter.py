@@ -192,20 +192,61 @@ class User:
                 return {"status":"error",
                     "data": "user info not provided!"}
             
-            print("create in update", self.create(user_info)["status"]) 
-            if (self.create(user_info))["status"] == "success":
-                for column in user_info:
-                        if column != "id":
-                            #cursor.execute(f"UPDATE {self.table_name} SET {column} = '{user_info[column]}' WHERE id = '{user_info['id']}';")
-                            cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (user_info[column], user_info["id"]))
-                            db_connection.commit()
+            if self.exists(id = user_info["id"])["data"] == False:
+                return {"status":"error",
+                    "data":"error: id doesn't exist"}
+            
+            if self.exists(username = user_info["username"])["data"] == True:
+                return {"status":"error",
+                    "data":"error: username already exists"}
+            
+            
+            #validity checks
+            for char in user_info["username"]:
+                if not (char.isalnum() or char == "-" or char == "_"):
+                    return {"status": "error",
+                            "data": "bad username: usernames can only include A-Z, a-z, 0-9, -, _"
+                            }
+                
+            if len(user_info["password"]) < 8:
+                return {"status": "error",
+                        "data": "password too short: password must be at least 8 characters"
+                        } 
+            
+            if "@" not in user_info["email"] or "." not in user_info["email"]:
+                return {"status": "error",
+                        "data": "bad email: email needs @ and ."}
+            
+            for char in user_info["email"]:
+                if char.isalpha() == False and char != '@' and char != '.' and char.isnumeric() == False:
+                    return {"status": "error",
+                            "data": "bad email: invalid"} 
+                
+            for column in user_info:
+                if column != "id":
+                    #cursor.execute(f"UPDATE {self.table_name} SET {column} = '{user_info[column]}' WHERE id = '{user_info['id']}';")
+                    cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (user_info[column], user_info["id"]))
+                    db_connection.commit()
 
-                return {"status":"success",
+                
+            return {"status":"success",
                     "data": self.get(id = user_info["id"])["data"]}
-            else:
-               {"status":"error",
-                    "data": "updated info has an error: check whether your username, password, or email fit in the requirements or already exist."} 
-    '''    
+            
+            #print("create in update", self.create(user_info)["status"]) 
+            # if (self.create(user_info))["status"] == "success":
+            #     print("updated_user_info", user_info)
+            #     for column in user_info:
+            #             if column != "id":
+            #                 #cursor.execute(f"UPDATE {self.table_name} SET {column} = '{user_info[column]}' WHERE id = '{user_info['id']}';")
+            #                 cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (user_info[column], user_info["id"]))
+            #                 db_connection.commit()
+
+            #     return {"status":"success",
+            #         "data": self.get(id = user_info["id"])["data"]}
+            # else:
+            #    {"status":"error",
+            #         "data": "updated info has an error: check whether your username, password, or email fit in the requirements or already exist."} 
+            '''    
             if self.exists(id = user_info["id"])["data"] == True:
                 if self.exists(username= user_info["username"])["data"] == False:
                     if len(user_info["password"]) > 8:
