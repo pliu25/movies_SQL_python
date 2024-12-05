@@ -197,7 +197,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
             print(error)
         finally:
             db_connection.close()
-    '''
+
     def test_create_many_scorecards_same_game(self):
         method="scorecard.create"
         all_scorecards = []
@@ -251,9 +251,11 @@ class Scorecard_Model_Tests(unittest.TestCase):
                         "password":"IamBOWSER4Real"}
         new_user = self.UserModel.create(new_user_info)['data']
         new_scorecard = self.ScorecardModel.create(game["id"], new_user["id"], game["name"]+"|"+new_user["username"])
+        print("new_scorecard", new_scorecard)
         ensure_data_packet_formatting(self, new_scorecard, method, "error") #max of 4 players per game
         
         all_scorecards_returned = self.ScorecardModel.get_all()['data']
+        print("all_scorecards_returned", all_scorecards_returned)
         self.assertTrue(len(all_scorecards_returned)==len(all_scorecards)) #scorecard has not been added to DB
         print("test_create_too_many_scorecards_same_game_different_users passed!")  
 
@@ -519,7 +521,7 @@ class Scorecard_Model_Tests(unittest.TestCase):
         for game_name_to_check in all_game_names:
             self.assertIn(game_name_to_check, all_user_game_names['data'])
         print("test_get_all_user_game_names_many_games passed!") 
-        
+    '''
     def test_update_scorecard_exists(self):
         #only tests updating categories since that will be the way we use update in pur project
         method = "scorecard.update"

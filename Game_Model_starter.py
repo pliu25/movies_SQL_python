@@ -70,7 +70,7 @@ class Game:
             cursor = db_connection.cursor()
             game_id = random.randint(0, self.max_safe_id)
 
-            print("game_info", game_info)
+            #print("game_info", game_info)
             # TODO: check to see if id already exists!! return error 
             
             if self.exists(id = game_id)["data"] == True:

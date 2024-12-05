@@ -67,7 +67,7 @@ class User:
             cursor = db_connection.cursor()
             user_id = random.randint(0, self.max_safe_id)
 
-            print("user_info", user_info)
+            #print("user_info", user_info)
             # TODO: check to see if id already exists!! return error 
             
             if self.exists(id = user_id)["data"] == True:
@@ -192,19 +192,43 @@ class User:
                 return {"status":"error",
                     "data": "user info not provided!"}
             
-            if self.exists(id = user_info["id"])["data"] == True:
+            print("create in update", self.create(user_info)["status"]) 
+            if (self.create(user_info))["status"] == "success":
                 for column in user_info:
-                    if column != "id":
-                        #cursor.execute(f"UPDATE {self.table_name} SET {column} = '{user_info[column]}' WHERE id = '{user_info['id']}';")
-                        cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (user_info[column], user_info["id"]))
-                        db_connection.commit()
+                        if column != "id":
+                            #cursor.execute(f"UPDATE {self.table_name} SET {column} = '{user_info[column]}' WHERE id = '{user_info['id']}';")
+                            cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (user_info[column], user_info["id"]))
+                            db_connection.commit()
 
                 return {"status":"success",
                     "data": self.get(id = user_info["id"])["data"]}
+            else:
+               {"status":"error",
+                    "data": "updated info has an error: check whether your username, password, or email fit in the requirements or already exist."} 
+    '''    
+            if self.exists(id = user_info["id"])["data"] == True:
+                if self.exists(username= user_info["username"])["data"] == False:
+                    if len(user_info["password"]) > 8:
+                        for column in user_info:
+                            if column != "id":
+                                #cursor.execute(f"UPDATE {self.table_name} SET {column} = '{user_info[column]}' WHERE id = '{user_info['id']}';")
+                                cursor.execute(f"UPDATE {self.table_name} SET {column} = ? WHERE id = ?;", (user_info[column], user_info["id"]))
+                                db_connection.commit()
+
+                        return {"status":"success",
+                            "data": self.get(id = user_info["id"])["data"]}
+                    else:
+                        return {"status":"error",
+                        "data": "new password too short! passwords should be at least 8 chars."}
+                else:
+                    return {"status":"error",
+                    "data": "username already exists!"}
             
             else:
                 return {"status":"error",
-                    "data": "updated information doesn't exist!"}
+                    "data": "id and updated information doesn't exist!"}
+
+            '''
 
         except sqlite3.Error as error:
             return {"status":"error",

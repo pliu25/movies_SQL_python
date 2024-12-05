@@ -37,27 +37,35 @@ class Scorecard:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
             card_id = random.randint(0, self.max_safe_id)
-
             
-            #validity checks
-            '''
-            for char in game_info["name"]:
-                if not (char.isalnum() or char == "-" or char == "_"):
-                    return {"status": "error",
-                            "data": "bad game name: game names can only include A-Z, a-z, 0-9, -, _"
-                            }
-            '''
+            #print("user_id", user_id)
+            categories = json.dumps(Scorecard.create_blank_score_info(self))
+            results = cursor.execute(f"SELECT * FROM {self.table_name} WHERE game_id = {game_id};").fetchall()
+            game_count = len(results)
+            turn_order = game_count + 1
 
-            turn_order = 1
-            #turn_order+=1
-            sc_data = (card_id, game_id, user_id, json.dumps(Scorecard.create_blank_score_info(self)), turn_order, name)
+            if turn_order > 4:
+                return {"status": "error",
+                    "data": "too many scorecards initiated! 4 max players"
+                    }
+            
+            player_exists = cursor.execute(f"SELECT * FROM {self.table_name} WHERE user_id = {user_id} AND game_id = {game_id};").fetchall()
+
+            if player_exists:
+                return {"status": "error",
+                    "data": "scorecard already initiated for existing player!"
+                    }
+            
+            sc_data = (card_id, game_id, user_id, categories, turn_order, name)
+            print(sc_data)
             cursor.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?, ?, ?);", sc_data)
             db_connection.commit()
 
             return {"status": "success",
                     "data": self.to_dict(sc_data)
                     }
-   
+            
+
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -109,7 +117,7 @@ class Scorecard:
             all_cards = []
             for card_data in fetch_all_cards:
                 all_cards.append(self.to_dict(card_data))
-            print("all_users", all_cards)
+            #print("all_users", all_cards)
             return {"status":"success",
                     "data":all_cards}
 
@@ -124,7 +132,17 @@ class Scorecard:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
 
-            print(game_name)
+            all_cards = self.get_all()["data"]
+            game_cards = []
+            for card in all_cards:
+                card_game_name = card["name"].split("|")[0]
+                if card_game_name == game_name:
+                    game_cards.append(card_game_name)
+
+            print("game_cards", game_cards)
+            return {"status":"success",
+                    "data":game_cards}
+
 
 
         except sqlite3.Error as error:
@@ -138,6 +156,17 @@ class Scorecard:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
 
+            all_cards = self.get_all()["data"]
+            usernames = []
+            for card in all_cards:
+                card_game_name = card["name"].split("|")[0]
+                card_username = card["name"].split("|")[1]
+                if card_game_name == game_name:
+                    usernames.append(card_username)
+
+            return {"status":"success",
+                    "data":usernames}
+
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
@@ -149,6 +178,17 @@ class Scorecard:
             db_connection = sqlite3.connect(self.db_name)
             cursor = db_connection.cursor()
 
+            all_cards = self.get_all()["data"]
+            game_cards = []
+            for card in all_cards:
+                card_game_name = card["name"].split("|")[0]
+                card_username = card["name"].split("|")[1]
+                if card_username == username:
+                    game_cards.append(card_game_name)
+
+            return {"status":"success",
+                    "data":game_cards}
+            
         except sqlite3.Error as error:
             return {"status":"error",
                     "data":error}
