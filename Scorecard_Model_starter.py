@@ -66,7 +66,6 @@ class Scorecard:
             return {"status": "success",
                     "data": self.to_dict(sc_data)
                     }
-            
 
         except sqlite3.Error as error:
             return {"status":"error",
